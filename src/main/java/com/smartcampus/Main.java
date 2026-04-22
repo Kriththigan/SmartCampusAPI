@@ -3,19 +3,38 @@ package com.smartcampus;
 import com.smartcampus.model.Room;
 import com.smartcampus.model.Sensor;
 import com.smartcampus.store.DataStore;
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
+import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
+import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.server.ResourceConfig;
 
-@ApplicationPath("/api/v1")
-public class SmartCampusApplication extends Application {
+import java.io.IOException;
+import java.net.URI;
 
-    public SmartCampusApplication() {
+public class Main {
+
+    public static void main(String[] args) throws IOException {
+        ResourceConfig config = new ResourceConfig()
+                .packages(
+                        "com.smartcampus.resource",
+                        "com.smartcampus.config",
+                        "com.smartcampus.exception",
+                        "com.smartcampus.filter"
+                )
+                .register(JacksonFeature.class);
+
+        HttpServer server = GrizzlyHttpServerFactory
+                .createHttpServer(URI.create("http://0.0.0.0:8080/"), config);
+
         seedData();
+
+        System.out.println("Server started at http://localhost:8080/");
+        System.in.read();
+        server.shutdownNow();
     }
 
-    private void seedData() {
+    private static void seedData() {
         DataStore store = DataStore.getInstance();
-
         if (!store.getRooms().isEmpty()) return;
 
         Room room1 = new Room("LIB-301", "Library Quiet Study", 50);
@@ -35,5 +54,7 @@ public class SmartCampusApplication extends Application {
         room1.getSensorIds().add(sensor1.getId());
         room2.getSensorIds().add(sensor2.getId());
         room3.getSensorIds().add(sensor3.getId());
+
+        System.out.println("Seed data loaded successfully!");
     }
 }
