@@ -8,7 +8,7 @@ import javax.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.Map;
 
-@Path("/")
+@Path("/api/v1")
 public class DiscoveryResource {
 
     @GET
