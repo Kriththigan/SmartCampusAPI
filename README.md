@@ -7,7 +7,7 @@
 | Name | Satkunam Kriththigan |
 | Module | 5COSC022C.2 Client-Server Architectures |
 | University | University of Westminster |
-| GitHub Repo | https://github.com/Kriththigan/smart-campus-api |
+| GitHub Repo | https://github.com/Kriththigan/SmartCampusAPI.git |
 | Submission Date | 24 April 2026 |
 
 ---
@@ -65,7 +65,7 @@ http://localhost:8080/api/v1
 
 ### Step 1 — Clone the repository
 ```bash
-git clone https://github.com/Kriththigan/smart-campus-api.git
+git clone https://github.com/Kriththigan/SmartCampusAPI.git
 cd smart-campus-api
 ```
 
@@ -111,15 +111,17 @@ The server automatically loads sample data on startup:
 |---|---|---|---|---|
 | GET | /api/v1 | API discovery and HATEOAS links | 200 | - |
 | GET | /api/v1/rooms | Get all rooms | 200 | - |
-| POST | /api/v1/rooms | Create a new room | 201 | 400, 409 |
-| GET | /api/v1/rooms/{roomId} | Get room by ID | 200 | 404 |
-| DELETE | /api/v1/rooms/{roomId} | Delete a room | 204 | 404, 409 |
+| POST | /api/v1/rooms | Create a new room | 201 | - |
+| GET | /api/v1/rooms/{roomId} | Get room by ID | 200 | - |
+| DELETE | /api/v1/rooms/{roomId} | Delete a room | - | 409 |
 | GET | /api/v1/sensors | Get all sensors | 200 | - |
 | GET | /api/v1/sensors?type={type} | Filter sensors by type | 200 | - |
-| POST | /api/v1/sensors | Create a new sensor | 201 | 400, 409, 422 |
-| GET | /api/v1/sensors/{sensorId} | Get sensor by ID | 200 | 404 |
-| GET | /api/v1/sensors/{sensorId}/readings | Get all readings | 200 | 404 |
-| POST | /api/v1/sensors/{sensorId}/readings | Add a new reading | 201 | 403, 404 |
+| POST | /api/v1/sensors | Create a new sensor | 201 | - |
+| POST | /api/v1/sensors | Create Sensor with INVALID roomId  | - | 422 |
+| GET | /api/v1/sensors/{sensorId}/readings | Get all readings | 200 | - |
+| POST | /api/v1/sensors/{sensorId}/readings | Add a new reading | 201 | - |
+| POST | /api/v1/sensors/{sensorId}/readings | Reading on MAINTENANCE Sensor | - | 403 |
+
 
 ---
 
@@ -137,14 +139,14 @@ curl http://localhost:8080/api/v1
 Response 200:
 ```json
 {
-  "api": "Smart Campus API",
-  "version": "v1",
-  "status": "running",
-  "contact": "admin@smartcampus.ac.uk",
-  "resources": {
-    "rooms": "/api/v1/rooms",
-    "sensors": "/api/v1/sensors"
-  }
+    "contact": "admin@smartcampus.ac.uk",
+    "resources": {
+        "rooms": "/api/v1/rooms",
+        "sensors": "/api/v1/sensors"
+    },
+    "api": "Smart Campus API",
+    "version": "v1",
+    "status": "running"
 }
 ```
 
@@ -169,11 +171,6 @@ curl -X POST http://localhost:8080/api/v1/rooms \
 curl http://localhost:8080/api/v1/rooms/LIB-301
 ```
 
-**DELETE /api/v1/rooms/{roomId}** — Delete a room
-```bash
-curl -X DELETE http://localhost:8080/api/v1/rooms/NEW-101
-```
-
 ---
 
 ### Sensors
@@ -188,16 +185,17 @@ curl http://localhost:8080/api/v1/sensors
 curl "http://localhost:8080/api/v1/sensors?type=CO2"
 ```
 
-**POST /api/v1/sensors** — Create a sensor
+**GET /api/v1/sensors** — Create Valid Sensor
 ```bash
-curl -X POST http://localhost:8080/api/v1/sensors \
-  -H "Content-Type: application/json" \
-  -d '{"id":"TEMP-002","type":"Temperature","status":"ACTIVE","currentValue":0,"roomId":"CS-101"}'
-```
-
-**GET /api/v1/sensors/{sensorId}** — Get sensor by ID
-```bash
-curl http://localhost:8080/api/v1/sensors/TEMP-001
+curl http://localhost:8080/api/v1/sensors
+-H "Content-Type: application/json" \
+-d '{
+  "id": "TEMP-002",
+  "type": "Temperature",
+  "status": "ACTIVE",
+  "currentValue": 0,
+  "roomId": "CS-101"
+}'
 ```
 
 ---
@@ -227,8 +225,9 @@ curl -X DELETE http://localhost:8080/api/v1/rooms/LIB-301
 Response:
 ```json
 {
-  "error": "Conflict",
-  "message": "Room LIB-301 cannot be deleted as it still has active sensors assigned to it."
+    "error": "Room Conflict",
+    "message": "Room LIB-301 cannot be deleted as it still has active sensors assigned to it.",
+    "status": "409"
 }
 ```
 
@@ -241,8 +240,9 @@ curl -X POST http://localhost:8080/api/v1/sensors \
 Response:
 ```json
 {
-  "error": "Unprocessable Entity",
-  "message": "Room with ID 'FAKE-ROOM' does not exist."
+    "error": "Unprocessable Entity",
+    "message": "Room with ID 'FAKE-ROOM' does not exist. Please register the room first before adding a sensor.",
+    "status": "422"
 }
 ```
 
@@ -255,8 +255,9 @@ curl -X POST http://localhost:8080/api/v1/sensors/OCC-001/readings \
 Response:
 ```json
 {
-  "error": "Forbidden",
-  "message": "Sensor 'OCC-001' is currently under MAINTENANCE and cannot accept new readings."
+    "error": "Sensor Unavailable",
+    "message": "Sensor 'OCC-001' is currently under MAINTENANCE and cannot accept new readings.",
+    "status": "403"
 }
 ```
 
