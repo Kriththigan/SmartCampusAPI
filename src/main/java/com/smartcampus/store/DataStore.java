@@ -9,30 +9,19 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DataStore {
 
-    
     private static final DataStore INSTANCE = new DataStore();
 
-    
     private final Map<String, Room> rooms = new ConcurrentHashMap<>();
     private final Map<String, Sensor> sensors = new ConcurrentHashMap<>();
     private final Map<String, List<SensorReading>> readings = new ConcurrentHashMap<>();
 
-    private DataStore() {
-        Room r1 = new Room("LIB-301", "Library Quiet Study", 50);
-        rooms.put(r1.getId(), r1);
-
-        Sensor s1 = new Sensor("TEMP-001", "Temperature", "ACTIVE", 22.5, "LIB-301");
-        sensors.put(s1.getId(), s1);
-        r1.getSensorIds().add(s1.getId());
-
-        readings.put(s1.getId(), new ArrayList<>());
-    }
+    // Empty constructor - seed data handled in Main.java
+    private DataStore() {}
 
     public static DataStore getInstance() {
         return INSTANCE;
     }
 
-    
     public Map<String, Room> getRooms() { return rooms; }
 
     public Room getRoom(String id) { return rooms.get(id); }
