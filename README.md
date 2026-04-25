@@ -286,13 +286,13 @@ Query parameters (`?type=CO2`) are semantically correct for **filtering and sear
 ### Part 4.1 — Sub-Resource Locator Benefits
 The Sub-Resource Locator pattern delegates handling of nested paths to dedicated classes. `SensorReadingResource` only handles reading-related logic, while `SensorResource` handles sensor-related logic. This separation follows the Single Responsibility Principle — each class has one clear purpose. In large APIs, putting all nested paths in one massive controller class becomes unmaintainable and hard to test. Sub-resource locators allow each concern to be developed, tested, and evolved independently, improving code quality and maintainability.
 
-### Part 5.1 — HTTP 422 vs 404
+### Part 5.2 — HTTP 422 vs 404
 HTTP 404 means the **requested URL** was not found on the server. HTTP 422 means the URL was valid and the JSON payload was well-formed, but the **semantic content is invalid** — in this case, the `roomId` field references a room that does not exist. Using 422 gives clients precise feedback: the problem is inside the request body data, not the endpoint itself. This distinction helps client developers debug issues faster and write more accurate error handling logic.
 
-### Part 5.2 — Stack Trace Security Risks
+### Part 5.4 — Stack Trace Security Risks
 Exposing Java stack traces to external users reveals: internal package and class names (helps attackers map the codebase structure), library names and versions (enables targeting of known CVEs), internal logic flow and method call chains (aids in crafting targeted exploits), file system paths if present, and database query details if applicable. Attackers use this information to identify vulnerable dependencies and craft precise attacks. The GlobalExceptionMapper prevents this by always returning a generic error message instead of the raw stack trace.
 
-### Part 5.3 — Filters vs Inline Logging
+### Part 5.5 — Filters vs Inline Logging
 Using JAX-RS filters for logging follows the **separation of concerns** principle. Adding `Logger.info()` calls manually inside every resource method is repetitive, inconsistent, and error-prone — it is easy to forget to add logging to new methods. Filters are applied automatically to every request and response from a single class, ensuring consistent logging across the entire API. This also makes it easy to change the logging format or level globally without touching individual resource classes.
 
 ---
