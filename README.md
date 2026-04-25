@@ -66,7 +66,7 @@ http://localhost:8080/api/v1
 ### Step 1 — Clone the repository
 ```bash
 git clone https://github.com/Kriththigan/SmartCampusAPI.git
-cd smart-campus-api
+cd SmartCampusAPI
 ```
 
 ### Step 2 — Build the project
