@@ -299,7 +299,7 @@ Using JAX-RS filters for logging follows the **separation of concerns** principl
 
 ## Video Demonstration
 
-[Video demonstration link — uploaded to Blackboard]
+https://drive.google.com/file/d/1U3RVllgBubFVywK_DEz1p4KLlCHDeIuL/view?usp=drive_link
 
 ---
 
