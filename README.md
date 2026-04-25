@@ -185,7 +185,7 @@ curl http://localhost:8080/api/v1/sensors
 curl "http://localhost:8080/api/v1/sensors?type=CO2"
 ```
 
-**GET /api/v1/sensors** — Create Valid Sensor
+**POST /api/v1/sensors** — Create Valid Sensor
 ```bash
 curl http://localhost:8080/api/v1/sensors
 -H "Content-Type: application/json" \
